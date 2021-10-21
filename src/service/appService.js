@@ -1,5 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const registerUserModel = require('../model/registerModel');
 const { apiError, invalidInputs } = require('../helper/statusMessages');
 
 const validateInputs = (body) => {
@@ -33,13 +34,18 @@ const appService = async (body) => {
   try {
     const inputsAreValid = validateInputs(body);
     const JWT_SECRET = process.env.JWT_SECRET;
-    return inputsAreValid
-      ? {
+    if (!inputsAreValid) return invalidInputs;
+    const insertionResponse  = await registerUserModel(body);
+    const { insertedId } = insertionResponse;
+
+    return {
         status: 201,
         message: 'created',
-        authentication: jwt.sign( { id: 1 }, JWT_SECRET)
-      }
-      : invalidInputs;
+        authentication: jwt.sign(
+          { id: insertedId.toString() },
+          JWT_SECRET
+        )
+      };
     
   }
   catch(error) {

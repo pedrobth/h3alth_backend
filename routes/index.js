@@ -1,9 +1,9 @@
+const appController = require('../src/controller/appController');
 var express = require('express');
-var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  return res.send('hello world');
-});
+const appRouter = express.Router();
 
-module.exports = router;
+appRouter.post('/', appController);
+
+
+module.exports = appRouter;

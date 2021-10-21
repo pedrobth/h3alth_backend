@@ -10,8 +10,8 @@ appController.post('/', async (req, res, next) => {
     // console.log('@ controller')
     const registerResponse = await appService(body);
     console.log(registerResponse)
-    const { message, status } = registerResponse;
-    return res.status(status).json(message);
+    const { message, status, authentication } = registerResponse;
+    return res.status(status).json({ message, authentication });
     // return res.status(200).json('controller runnig')
   }
   catch(error) {

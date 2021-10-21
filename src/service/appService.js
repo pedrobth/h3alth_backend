@@ -1,6 +1,6 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const statusMessages = require('../helper/statusMessages').default;
+const { apiError, invalidInputs } = require('../helper/statusMessages');
 
 const validateInputs = (body) => {
   const mandatoryFields = [
@@ -23,7 +23,6 @@ const validateInputs = (body) => {
       if(!addressInputs[addressFields]) invalidInputs.push(addressFields);
     }
   });
-  console.log(`validation: ${invalidInputs}, ${invalidInputs.length}`);
   return invalidInputs.length === 0
     ? true
     : false;
@@ -32,14 +31,20 @@ const validateInputs = (body) => {
 
 const appService = async (body) => {
   try {
-    const validationResponse = validateInputs(body);
-    console.log(`validationResult: ${validationResponse}`)
+    const inputsAreValid = validateInputs(body);
     const JWT_SECRET = process.env.JWT_SECRET;
-    return {status: 200, message: 'done'}
+    return inputsAreValid
+      ? {
+        status: 201,
+        message: 'created',
+        authentication: jwt.sign( { id: 1 }, JWT_SECRET)
+      }
+      : invalidInputs;
+    
   }
   catch(error) {
-    console.log(error)
-    return (statusMessages.apiError);
+    console.log(`appService ERROR: ${error}`)
+    return (apiError);
   }
 }
 
